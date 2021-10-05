@@ -64,7 +64,7 @@ int main() {
         }
     }
     in.close();     // закрываем файл
-    std::cout << "Ответ:" << std::endl;
+    std::cout << "Antworten:" << std::endl;
     std::cout << "delta="+to_string(min_d)+" x="+to_string(fx)+" y="+to_string(fy) << std::endl;
     return 0;
 }
