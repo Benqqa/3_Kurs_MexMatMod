@@ -1,0 +1,20 @@
+def implicit_schema(self):
+        T=self.StartFillMatrix()
+        A=1/h**2
+        C=1/h**2
+        B=(2*(dt**2)+h**2)/((h**2)*(dt**2))
+        F=np.zeros((self.len_X))
+        P=np.zeros((self.len_X))
+        Q=np.zeros((self.len_X))
+        for k in range(1,self.len_T-1):
+            for i in range(0, self.len_X):
+                F[i]=2/(dt**2)*T[i,k]-1/(dt**2)*T[i,k-1]
+            P[0]=C/B
+            Q[0]=F[0]/B
+            for i in range(1,self.len_X):
+                P[i]=C/(B-A*P[i-1])
+                Q[i]=(F[i]+A*Q[i-1])/(B-A*P[i-1])
+            for i in range(self.len_X-2,0,-1):
+                T[i,k+1]=P[i]*T[i+1,k+1]+Q[i]    
+                
+        return T
