@@ -9,4 +9,10 @@
 H:/Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/MatMod/dz1/main.cpp
 iostream
 -
+fstream
+-
+iomanip
+-
+valarray
+-
 
