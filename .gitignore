@@ -7,3 +7,5 @@ MatMod/dz1/cmake-build-debug/CMakeFiles/dz1.dir/objects.a
 MatMod/dz1/cmake-build-debug/CMakeFiles/dz1.dir/main.cpp.obj
 MatMod/dz1/cmake-build-debug/CMakeFiles/dz1.dir/main.cpp.obj
 MatMod/dz1/.idea/workspace.xml
+*.tar
+.idea/ 
