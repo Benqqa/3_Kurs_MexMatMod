@@ -35,8 +35,8 @@ int main() {
     std::string line;
     int xn,yn,fx_r,fy_r,fx_l,fy_l;
     int finde_value=1;
-    double min_d_r=1;
-    double min_d_l=1;
+    double max_d_r=0;
+    double max_d_l=0;
     bool isFirstLine= true;
     bool isTwiceLine_r= true,isTwiceLine_l= true;
     std::ifstream in("H:\\Ucheba\\Poly_3_kurs\\3_Kurs_MexMatMod\\MatMod\\dz1\\files_for_dz\\in.txt"); // окрываем файл для чтения
@@ -44,6 +44,9 @@ int main() {
     {
         while (getline(in, line))
         {
+            if(line.length() == 0 || line.length() == 1){
+                continue;
+            }
             string *values=StringToMass(line,' ',2);
             int x=atoi( values[0].c_str() );
             int y=atoi( values[1].c_str() );
@@ -69,18 +72,21 @@ int main() {
                         dist=y;
                     }
                 }
-                //<0 - справа"Left:
-                if(((xn-0)*(y-0)-(yn-0)*(x-0))<=0){
+                //<0 - справа:
+                if(((xn-0)*(y-0)-(yn-0)*(x-0))>=0){
                     std::cout << "Right, Dist="+to_string(dist) << std::endl;
                     if(isTwiceLine_r){
                         isTwiceLine_r= false;
-                        min_d_r=dist;
+                        max_d_r=dist;
+                        fx_r=x;
+                        fy_r=y;
                     }
                     else{
-                        if(dist<min_d_r){
-                            min_d_r=dist;
+                        if(dist>=max_d_r){
+                            max_d_r=dist;
                             fx_r=x;
                             fy_r=y;
+                            std::cout << line << std::endl;
                         }
                     }
                 }//>0 - слева
@@ -88,37 +94,27 @@ int main() {
                     std::cout << "Left, Dist="+to_string(dist) << std::endl;
                     if(isTwiceLine_l){
                         isTwiceLine_l= false;
-                        min_d_l=dist;
+                        max_d_l=dist;
+                        fx_l=x;
+                        fy_l=y;
                     }
                     else{
-                        if(dist<min_d_l){
-                            min_d_l=dist;
+                        if(dist>=max_d_l){
+                            max_d_l=dist;
                             fx_l=x;
                             fy_l=y;
+                            std::cout << line << std::endl;
                         }
                     }
                 }
-                //
-                //угол
-                /*
-                double _cos=(xn*x+yn*y)/(sqrt(pow(x,2)+pow(y,2))*sqrt(pow(xn,2)+pow(yn,2)));
-                std::cout << _cos << std::endl;
-                if(finde_value-_cos<min_d){
-                    min_d=finde_value-_cos;
-                    fx=x;
-                    fy=y;
-                }
-                 */
-                //
             }
-            std::cout << line << std::endl;
+
             delete[] values;
         }
     }
     in.close();     // закрываем файл
-    std::cout << "Antworten:" << std::endl;
-    std::cout << "Left: delta="+to_string(min_d_l)+" x="+to_string(fx_l)+" y="+to_string(fy_l) << std::endl;
-    std::cout << "Right: delta="+to_string(min_d_r)+" x="+to_string(fx_r)+" y="+to_string(fy_r) << std::endl;
+    std::cout << "Leftmost: "+to_string(fx_l)+" "+to_string(fy_l) << std::endl;
+    std::cout << "Rightmost: "+to_string(fx_r)+" "+to_string(fy_r) << std::endl;
 
     return 0;
 }
