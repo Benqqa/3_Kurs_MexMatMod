@@ -28,10 +28,10 @@ class Laplas():
         
     def StartFillMatrix(self):
         T=np.zeros((self.len_X, self.len_Y))
-        T[:,0]=self.func_psi_0(self.Y)
-        T[:,-1]=self.func_psi_l(self.Y)
-        T[-1,:]=self.func_fi_l(self.X)
-        T[0,:]=self.func_fi_0(self.X)
+        T[:,0]=self.func_psi_0(self.Y[::-1])
+        T[:,-1]=self.func_psi_l(self.Y[::-1])
+        T[-1,:]=self.func_fi_l(self.X[::-1])
+        T[0,:]=self.func_fi_0(self.X[::-1])
 
         return T
     
@@ -40,13 +40,17 @@ class Laplas():
         T_new=np.zeros((self.len_X, self.len_Y))
         T2=self.StartFillMatrix()
         k=0
+        # for i in range(1,self.len_X-1):
+#                 for j in range(1,self.len_Y-1):
+#                     T[i,j]=(1/4)*(T[i-1,j]+T[i+1,j]+T[i,j-1]+T[i,j+1])
+        
+
         while (True) :
             k=k+1
             delta=[]
             for i in range(1,self.len_X-1):
                 for j in range(1,self.len_Y-1):
                     T[i,j]=(1/4)*(T[i-1,j]+T[i+1,j]+T[i,j-1]+T[i,j+1])
-
             for i in range(1,self.len_X-1):
                 for j in range(1,self.len_Y-1):
                     T2[i,j]=(1/4)*(T[i-1,j]+T[i+1,j]+T[i,j-1]+T[i,j+1])
@@ -81,9 +85,11 @@ mat=Test.StartFillMatrix()
 mass_k=[]
 mass_w=[]
 for i in range(1,20):
+#i=1
     m=i/10
     mass_w.append(m)
     print(m)
+    
     _return=Test.iterative_procedures(m)
     res1=_return[0]
     k=_return[1]
@@ -94,19 +100,29 @@ for i in range(1,20):
         Y=np.linspace(0, Test.y, num = Test.len_Y)
         X,Y = np.meshgrid(X,Y)
         fig, ax = plt.subplots()
+        ax.set_title("Разрез по y")
         ax.plot(X, res1[:,1],label="y=0.2")
         ax.plot(X, res1[:,3],label="y=0.6")
         ax.plot(X, res1[:,5],label="y=1")
+        ax.set_xlabel("y")
+        ax.set_ylabel("U")
         ax.legend()
         fig, ax = plt.subplots()
+        ax.set_title("Разрез по x")
         ax.plot(Y, res1[1,:],label="x=0.2")
         ax.plot(Y, res1[3,:],label="x=0.6")
         ax.plot(Y, res1[5,:],label="x=1")
+        ax.set_xlabel("y")
+        ax.set_ylabel("U")
+    
         ax.legend()
         fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
         Z=res1
         surf = ax.plot_surface(X, Y, res1, cmap='coolwarm',linewidth=0)
-        ax.view_init(40, -10)
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_zlabel("U")
+        ax.view_init(40, 10)
         plt.show()
 
 fig, ax = plt.subplots()
