@@ -31,7 +31,7 @@ string * StringToMass(string base_str, char delim, int size){
 std::tuple<int, int> step(int dividend, int divisor) {
     return  std::make_tuple(dividend / divisor, dividend % divisor);
 }
-void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0, double x_d, double v_x, double v_y, double v_0, int nomer_stolba){
+void polet(int index, int mass_size,string *mass_stolbov,int napr, int g, double y_0,double x_0, double x_d, double v_x, double v_y, double v_0, int nomer_stolba){
     std::cout << "index = "+to_string(index) << std::endl;
     if(index == 0){// первый вход - наполним массив столбов до первого пападания
 
@@ -50,7 +50,7 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
                 }
             }
 
-            string *mass_stolbov = new string[m-1];
+            string *mass_stolbov = new string[m];
 
             int k= 0;
             while (getline(in2, line)) // перебераем столбы
@@ -58,10 +58,13 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
 
             //кусок кода надо формить красиво
                 k++;
+                std::cout << line << std::endl;
                 if(k == 1){
+                    mass_stolbov[k-1]=line;
                     continue;
                 }
-                std::cout << line << std::endl;
+
+                std::cout << "null "+mass_stolbov[0] << std::endl;
                 string *values=StringToMass(line,' ',2);
                 double x=atof( values[0].c_str() );
                 double y=atof( values[1].c_str() );
@@ -71,17 +74,17 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
                     //проверка столбика
                     new_y=y_0+napr*(v_y/v_x)*(x-x_0-2*x_d)-g*(pow(x-x_0-2*x_d,2)/(2*pow(v_0,2)));
                     std::cout << "Heigth = "+to_string(new_y) << std::endl;
-                    if(new_y == 0){
+                    if(new_y <= 0){
                         std::cout << "Upalo v 0" << std::endl;
                         break;
                     }
                     if(new_y<=y){ // попал
-                        mass_stolbov[k-2]=line;
+                        mass_stolbov[k-1]=line;
                         std::cout << "POPALO!!!! v stolb x= "+to_string(x)+" y= "+to_string(y) << std::endl;
                         x_d=x-x_d; //смещение
                         //рекурсим
                         index++;
-                        nomer_stolba=nomer_stolba+napr*k-1;
+                        //nomer_stolba=nomer_stolba+napr*k-1;
                         napr=-1*napr;
                         //------
                         //тут надо развернуть массив координат столбов
@@ -89,28 +92,27 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
                         std::cout << k << std::endl;
                         if(k!= 2){
 
-                            string *mass_stolbov_2 = new string[k-1];
-                            for(int i=0; i<k-1; i++){
+                            string *mass_stolbov_2 = new string[k];
+                            std::cout << "mass_stolbov_2" << std::endl;
+                            for(int i=0; i<k; i++){
                                 mass_stolbov_2[i]=mass_stolbov[i];
                                 std::cout <<mass_stolbov_2[i] << std::endl;
                             }
                             delete[] mass_stolbov;
                             std::cout << mass_stolbov_2->length() << std::endl;
-                            string *mass_stolbov_2_1 = new string[k-1];
+                            string *mass_stolbov_2_1 = new string[k];
                             std::cout <<"perevorot" << std::endl;
-                            for(int i=0; i<k-1; i++){
-                                //std::cout <<mass_stolbov_2[i] << std::endl;
-                                //std::cout <<"i= "+to_string(k-3-i) << std::endl;
-                                std::cout <<mass_stolbov_2[k-2-i] << std::endl;
-                                mass_stolbov_2_1[i]=mass_stolbov_2[k-2-i];
+                            for(int i=0; i<k; i++){
+                                std::cout <<mass_stolbov_2[k-1-i] << std::endl;
+                                mass_stolbov_2_1[i]=mass_stolbov_2[k-1-i];
 
                             }
-                            for(int i=0; i<k-1; i++){
-                                // std::cout <<mass_stolbov_2[i] << std::endl;
+                            for(int i=0; i<k; i++){
                                 mass_stolbov_2[i]=mass_stolbov_2_1[i];
                             }
                             delete[] mass_stolbov_2_1;
-                            polet(index,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
+                            mass_size=k;
+                            polet(index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                         }
                         else{
                             std::cout <<"VSE!!! megdu 2 stolbami" << std::endl;
@@ -120,9 +122,10 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
                     }
                     else{ // получается не попал)))
                         std::cout << "NE POPALO(((( x= "+to_string(x)+" y= "+to_string(y) << std::endl;
+                        nomer_stolba+=napr*1;
                         //------------
                         //тут надо слхранить координаты в массив
-                        mass_stolbov[k-2]=line;
+                        mass_stolbov[k-1]=line;
                         //--------------
 
                     }
@@ -130,17 +133,27 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
             }
         }
     }
+//-----------------------------------------------------------------------------------------------
     else{
     //кусок кода надо формить красиво
         int k=0;
         string line;
         double new_y;
        // std::cout << mass_stolbov[0] << std::endl;
+        std::cout << "mass_stolbov/*" << std::endl;
+        std::cout << mass_size << std::endl;
+       for(int i=0; i<mass_size; i++){
+           std::cout << mass_stolbov[i] << std::endl;
+       }
+        std::cout << "*/" << std::endl;
+        string *mass_stolbov_1 = new string[mass_size];
         while (true){
             //mass_stolbov[k] доставать иксы и делать цирк
+
             line =mass_stolbov[k];
             k++;
             if(k == 1){
+                mass_stolbov_1[k-1]=line;
                 continue;
             }
             std::cout << line << std::endl;
@@ -152,46 +165,47 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
             //проверка столбика
             new_y=y_0+napr*(v_y/v_x)*(x-x_0-2*x_d)-g*(pow(x-x_0-2*x_d,2)/(2*pow(v_0,2)));
             std::cout << "Heigth = "+to_string(new_y) << std::endl;
-            if(new_y == 0){
+            if(new_y <= 0){
                 std::cout << "Upalo v 0" << std::endl;
+                std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
                 break;
             }
             if(new_y<=y){ // попал
-                mass_stolbov[k-2]=line;
+                mass_stolbov_1[k-1]=line;
                 std::cout << "POPALO!!! x= "+to_string(x)+" y= "+to_string(y) << std::endl;
                 x_d=x-x_d; //смещение
                 //рекурсим
                 index++;
-                nomer_stolba=nomer_stolba+napr*k-1;
+                //nomer_stolba=nomer_stolba+napr*k;
+                std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
                 napr=-1*napr;
                 //------
-                //тут надо развернуть массив координат столбов
+                //тут разворот массива координат столбов
                 std::cout << k << std::endl;
                 if(k!=2){
 
-                    string *mass_stolbov_2 = new string[k-1];
-                    for(int i=0; i<k-1; i++){
-                        mass_stolbov_2[i]=mass_stolbov[i];
+                    string *mass_stolbov_2 = new string[k];
+                    for(int i=0; i<k; i++){
+                        mass_stolbov_2[i]=mass_stolbov_1[i];
                         std::cout <<mass_stolbov_2[i] << std::endl;
                     }
                     delete[] mass_stolbov;
+                    delete[] mass_stolbov_1;
                     std::cout << "len: "+to_string(mass_stolbov_2->length()) << std::endl;
-                    string *mass_stolbov_2_1 = new string[k-1];
+                    string *mass_stolbov_2_1 = new string[k];
                     std::cout <<"perevorot" << std::endl;
-                    for(int i=0; i<k-1; i++){
-                        //std::cout <<mass_stolbov_2[i] << std::endl;
-                        //std::cout <<"i= "+to_string(k-3-i) << std::endl;
-                        std::cout <<mass_stolbov_2[k-3-i] << std::endl;
-                        mass_stolbov_2_1[i]=mass_stolbov_2[k-2-i];
+                    for(int i=0; i<k; i++){
+                        std::cout <<mass_stolbov_2[k-1-i] << std::endl;
+                        mass_stolbov_2_1[i]=mass_stolbov_2[k-1-i];
 
                     }
-                    for(int i=0; i<k-1; i++){
-                        // std::cout <<mass_stolbov_2[i] << std::endl;
+                    for(int i=0; i<k; i++){
                         mass_stolbov_2[i]=mass_stolbov_2_1[i];
                     }
                     delete[] mass_stolbov_2_1;
+                    mass_size=k;
                     //-------
-                    polet(index,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
+                    polet(index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                 }
                 else{
                     std::cout <<"VSE!!! megdu 2 stolbami" << std::endl;
@@ -201,9 +215,10 @@ void polet(int index,string *mass_stolbov,int napr, int g, double y_0,double x_0
             }
             else{ // получается не попал)))
                 //------------
-                //тут надо слхранить координаты в массив
+                //слхраним координаты в массив
                 std::cout << "NE POPAPO(((( x= "+to_string(x)+" y= "+to_string(y) << std::endl;
-                mass_stolbov[k-2]=line;
+                nomer_stolba+=napr*1;
+                mass_stolbov_1[k-1]=line;
                 //--------------
 
             }
@@ -224,6 +239,7 @@ int main() {
     v_0=3.1;
     int napr = 1; //напрво - true; налево - false
     int index = 0;
+    int mass_size=0;
     int nomer_stolba=0;
     std::string line;
     std::ifstream in("H:\\Ucheba\\Poly_3_kurs\\3_Kurs_MexMatMod\\MatMod\\dz2\\files_for_dz\\in.txt"); // окрываем файл для чтения
@@ -237,40 +253,10 @@ int main() {
                 m++;
             }
         }
-
-        string *mass_stolbov = new string[m-1];
-        polet(index, mass_stolbov, napr, g, y_0, x_0, x_d, v_x, v_y, v_0,nomer_stolba);
+        mass_size=m;
+        string *mass_stolbov = new string[m];
+        polet(index,mass_size, mass_stolbov, napr, g, y_0, x_0, x_d, v_x, v_y, v_0,nomer_stolba);
     }
     //
-    /*
-    //данные о столбиках
-    double x = 1;
-    double y = 2;
-    //отбор столбиков от направления
-    if( napr==1 && x > x_0){
-
-    }
-    if( napr != 1 && x < x_0){
-
-    }
-
-    //
-    //проверка столбика
-    double new_y=y_0+napr*(v_y/v_x)*(x-x_0-2*x_d)-g*(pow(x-x_0-2*x_d,2)/(2*pow(v_0,2)));
-    if(new_y<=y){
-        x_d=x-x_d; //смещение
-        //рекурсим
-
-    }
-    std::string line;
-    std::ifstream in("H:\\Ucheba\\Poly_3_kurs\\3_Kurs_MexMatMod\\MatMod\\dz2\\files_for_dz\\in.txt"); // окрываем файл для чтения
-    if (in.is_open())
-    {
-        while (getline(in, line))
-        {
-            std::cout << line << std::endl;
-
-        }
-    }*/
     return 0;
 }
