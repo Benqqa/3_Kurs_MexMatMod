@@ -33,13 +33,13 @@ std::tuple<int, int> step(int dividend, int divisor) {
 }
 int main() {
     std::string line;
-    int xn,yn,fx_r,fy_r,fx_l,fy_l;
-    int finde_value=1;
+    double xn,yn,fx_r,fy_r,fx_l,fy_l;
+    double finde_value=1;
     double max_d_r=0;
     double max_d_l=0;
     bool isFirstLine= true;
     bool isTwiceLine_r= true,isTwiceLine_l= true;
-    std::ifstream in("H:\\Ucheba\\Poly_3_kurs\\3_Kurs_MexMatMod\\MatMod\\dz1\\files_for_dz\\in.txt"); // окрываем файл для чтения
+    std::ifstream in("in.txt"); // окрываем файл для чтения
     if (in.is_open())
     {
         while (getline(in, line))
@@ -48,8 +48,8 @@ int main() {
                 continue;
             }
             string *values=StringToMass(line,' ',2);
-            int x=atoi( values[0].c_str() );
-            int y=atoi( values[1].c_str() );
+            double x=atof( values[0].c_str() );
+            double y=atof( values[1].c_str() );
             if(isFirstLine){
                 isFirstLine= false;
                 xn=(-1)*x;
@@ -74,7 +74,6 @@ int main() {
                 }
                 //<0 - справа:
                 if(((xn-0)*(y-0)-(yn-0)*(x-0))>=0){
-                    std::cout << "Right, Dist="+to_string(dist) << std::endl;
                     if(isTwiceLine_r){
                         isTwiceLine_r= false;
                         max_d_r=dist;
@@ -86,12 +85,10 @@ int main() {
                             max_d_r=dist;
                             fx_r=x;
                             fy_r=y;
-                            std::cout << line << std::endl;
                         }
                     }
                 }//>0 - слева
                 else{
-                    std::cout << "Left, Dist="+to_string(dist) << std::endl;
                     if(isTwiceLine_l){
                         isTwiceLine_l= false;
                         max_d_l=dist;
@@ -103,7 +100,6 @@ int main() {
                             max_d_l=dist;
                             fx_l=x;
                             fy_l=y;
-                            std::cout << line << std::endl;
                         }
                     }
                 }
