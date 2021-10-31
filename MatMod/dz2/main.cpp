@@ -33,10 +33,11 @@ std::tuple<int, int> step(int dividend, int divisor) {
 }
 void polet(string file_name,int index, int mass_size,string *mass_stolbov,int napr, double g, double y_0,double x_0, double x_d, double v_x, double v_y, double v_0, int nomer_stolba){
     if(index == 0){// первый вход - наполним массив столбов до первого пападания
-
+        //std::cout <<file_name << std::endl;
+        //std::cout <<linr << std::endl;
         std::string line;
-        std::ifstream in("file_name"); // окрываем файл для чтения
-        std::ifstream in2("file_name"); // окрываем файл для чтения
+        std::ifstream in(file_name); // окрываем файл для чтения
+        std::ifstream in2(file_name); // окрываем файл для чтения
         if (in.is_open())
         {
 
@@ -83,12 +84,12 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                     //проверка столбика
                     new_y=y_0+napr*(v_y/v_x)*(x-x_0-2*x_d)-g*(pow(x-x_0-2*x_d,2)/(2*pow(v_0,2)));
                     if(x==x_0){
-                        std::cout <<"ZONA = 0" << std::endl;
+                        std::cout <<"0" << std::endl;
                         break;
                         break;
                     }
                     if(new_y <= 0){
-                        std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                        std::cout <<to_string(nomer_stolba) << std::endl;
                         break;
                     }
                     if(new_y<=y){ // попал
@@ -122,7 +123,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                             polet(file_name,index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                         }
                         else{
-                            std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                            std::cout <<to_string(nomer_stolba) << std::endl;
                             break;
                         }
                     }
@@ -134,7 +135,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                         mass_stolbov[k-2]=line;
                         //--------------
                         if(k-1 == m-1){
-                            std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                            std::cout <<to_string(nomer_stolba) << std::endl;
                         }
                     }
                 delete[] values;
@@ -166,12 +167,12 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
             //проверка столбика
             new_y=y_0+napr*(v_y/v_x)*(x-x_0-2*x_d)-g*(pow(x-x_0-2*x_d,2)/(2*pow(v_0,2)));
             if(x==x_0){
-                std::cout <<"ZONA = 0" << std::endl;
+                std::cout <<"0" << std::endl;
                 break;
                 break;
             }
             if(new_y <= 0){
-                std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                std::cout <<to_string(nomer_stolba) << std::endl;
                 break;
             }
             if(new_y<=y){ // попал
@@ -180,7 +181,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                 //рекурсим
                 index++;
                 //nomer_stolba=nomer_stolba+napr*k;
-                std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                std::cout <<to_string(nomer_stolba) << std::endl;
                 napr=-1*napr;
                 //------
                 //тут разворот массива координат столбов
@@ -206,7 +207,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                     polet(file_name,index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                 }
                 else{
-                    std::cout <<"ZONA = "+to_string(nomer_stolba) << std::endl;
+                    std::cout <<to_string(nomer_stolba) << std::endl;
                     break;
                 }
             }
@@ -220,7 +221,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                 }
                 else{
 
-                    std::cout <<"ZONA = 0" << std::endl;
+                    std::cout <<"0" << std::endl;
                     break;
                     break;
                 }
@@ -239,6 +240,7 @@ int main(int argc, char** argv) {
         // аргументов нет или их больше чем мы ожидаем
         return 1;
     }
+  //  std::cout <<argv[1] << std::endl;
 
     //на вход данные о полете
     double g=9.81;
