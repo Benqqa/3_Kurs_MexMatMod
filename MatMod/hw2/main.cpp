@@ -2,10 +2,10 @@
 #include <fstream>
 #include <iomanip>
 #include <valarray>
+#include <map>
 
 using namespace std;
 string * StringToMass(string base_str, char delim, int size){
-
     size_t pos = 0;
     size_t base_str_size = base_str.size();
     //size_t delim_size = delim.size();
@@ -17,43 +17,29 @@ string * StringToMass(string base_str, char delim, int size){
         temp = temp.assign(base_str, pos, base_str.find(delim, pos) - pos);
         if (temp.size() > 0)  // проверка на пустую строку при необходимости
         {
-            // cout << temp << endl;
             mass_str[i] = temp;
             i++;
-            //cout << i << endl;
         }
         pos += temp.size() + delim_size;
-
     }
-
     return mass_str;
 }
 std::tuple<int, int> step(int dividend, int divisor) {
     return  std::make_tuple(dividend / divisor, dividend % divisor);
 }
-void polet(string file_name,int index, int mass_size,string *mass_stolbov,int napr, double g, double y_0,double x_0, double x_d, double v_x, double v_y, double v_0, int nomer_stolba){
+//napr = 1 напрво - true; налево - false
+void polet(string file_name, int mass_size,string *mass_stolbov,int index=0,int napr=1, double g=9.81, double y_0=1,double x_0=0, double x_d=0, double v_x=3, double v_y=1, double v_0=3.162277, int nomer_stolba=0){
     if(index == 0){// первый вход - наполним массив столбов до первого пападания
         std::string line;
-        std::ifstream in(file_name); // окрываем файл для чтения
-        std::ifstream in2(file_name); // окрываем файл для чтения
-        if (in.is_open())
+        //std::ifstream in(file_name); // окрываем файл для чтения
+        if (true)
         {
-
-            int m=0;
-            while (getline(in, line)) // перебераем столбы
-            {
-                if(line.length() != 0){
-                    m++;
-                }
-            }
-
-            string *mass_stolbov = new string[m];
+            //string *mass_stolbov = new string[mass_size];
 
             int k= 0;
             double x,y,new_y;
-            while (getline(in2, line)) // перебераем столбы
-            {
-
+            while (true){
+                line =mass_stolbov[k];
                 //кусок кода надо формить красиво
                 k++;
 
@@ -95,7 +81,6 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                     napr=-1*napr;
                     //тут надо развернуть массив координат столбов
                     if(k-1!= 2){
-
                         string *mass_stolbov_2 = new string[k-1];
                         for(int i=0; i<k-1; i++){
                             mass_stolbov_2[i]=mass_stolbov[i];
@@ -104,7 +89,6 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                         string *mass_stolbov_2_1 = new string[k-1];
                         for(int i=0; i<k-1; i++){
                             mass_stolbov_2_1[i]=mass_stolbov_2[k-2-i];
-
                         }
                         for(int i=0; i<k-1; i++){
                             mass_stolbov_2[i]=mass_stolbov_2_1[i];
@@ -112,7 +96,7 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                         delete[] mass_stolbov_2_1;
                         mass_size=k-1;
                         delete[] values;
-                        polet(file_name,index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
+                        polet(file_name,mass_size,mass_stolbov_2,index,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                         break;
                     }
                     else{
@@ -120,12 +104,11 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                         break;
                     }
                 }
-                else{ // получается не попал)))
-
+                else{ // не попал
                     nomer_stolba+=napr*1;
                     //тут надо слхранить координаты в массив
                     mass_stolbov[k-2]=line;
-                    if(k-1 == m-1){
+                    if(k-1 == mass_size-1){
                         std::cout <<to_string(nomer_stolba) << std::endl;
                     }
                 }
@@ -154,7 +137,6 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
             if(x==x_0){
                 std::cout <<"0" << std::endl;
                 break;
-                break;
             }
             if(new_y <= 0){
                 std::cout <<to_string(nomer_stolba) << std::endl;
@@ -166,7 +148,6 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                 //рекурсим
                 index++;
                 napr=-1*napr;
-                //------
                 //тут разворот массива координат столбов
                 if(k!=2){
 
@@ -179,15 +160,13 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                     string *mass_stolbov_2_1 = new string[k];
                     for(int i=0; i<k; i++){
                         mass_stolbov_2_1[i]=mass_stolbov_2[k-1-i];
-
                     }
                     for(int i=0; i<k; i++){
                         mass_stolbov_2[i]=mass_stolbov_2_1[i];
                     }
                     delete[] mass_stolbov_2_1;
                     mass_size=k;
-                    //-------
-                    polet(file_name,index,mass_size,mass_stolbov_2,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
+                    polet(file_name,mass_size,mass_stolbov_2,index,napr, g, y_0, x_0,  x_d,  v_x,  v_y,  v_0, nomer_stolba);
                     break;
                 }
                 else{
@@ -195,13 +174,11 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
                     break;
                 }
             }
-            else{ // получается не попал)))
-                //------------
+            else{ // не попал
                 //слхраним координаты в массив
                 if(x!=x_0){
                     nomer_stolba+=napr*1;
                     mass_stolbov_1[k-1]=line;
-                    //--------------
                 }
                 else{
                     std::cout <<"0" << std::endl;
@@ -214,40 +191,51 @@ void polet(string file_name,int index, int mass_size,string *mass_stolbov,int na
 }
 int main(int argc, char** argv) {
     if(argc == 2){
-        // есть один агрумент
-        // в argv[1] содержится строка с первым агрументом (имя файла)
     }else{
-        // аргументов нет или их больше чем мы ожидаем
         return 1;
     }
-    //  std::cout <<argv[1] << std::endl;
-
-    //на вход данные о полете
-    double g=9.81;
-    double y_0=1;
-    double x_0=0;
-    double x_d=0; // коэф смещения
-    double v_x=3;
-    double v_y=1;
-    double v_0= sqrt(pow(v_x,2)+pow(v_y,2));
-    int napr = 1; //напрво - true; налево - false
-    int index = 0;
-    int mass_size=0;
-    int nomer_stolba=0;
     std::string line;
     std::ifstream in(argv[1]); // окрываем файл для чтения
-
     if (in.is_open()) {
-        int m = 0;
+        int m = 0; //mass_size
+        map <double, double> mp;
+        double x,y;
+        string mass_stolbov_1[2];
         while (getline(in, line)) // перебераем столбы
         {
             if (line.length() != 0) {
+                //std::cout <<"line: " +line<< std::endl;
+                string *values=StringToMass(line,' ',2);
+                y=atof( values[1].c_str() );
+                x=atof( values[0].c_str() );
+                if(!(m == 0 || m == 1)) {
+                    mp.insert(pair<double, double>(x, y));
+                }
+                else{
+                    mass_stolbov_1[m]=line;
+                }
                 m++;
             }
         }
-        mass_size=m;
         string *mass_stolbov = new string[m];
-        polet(argv[1],index,mass_size, mass_stolbov, napr, g, y_0, x_0, x_d, v_x, v_y, v_0,nomer_stolba);
+        mass_stolbov[0]=mass_stolbov_1[0];
+        mass_stolbov[1]=mass_stolbov_1[1];
+        int o=0;
+        for(auto it = mp.begin(); it != mp.end(); ++it){
+            o++;
+            mass_stolbov[1+o]= to_string(it->first)+" "+to_string(it->second);
+        }
+
+        /*cout << "mp contains:\n";
+        for (auto it = mp.begin(); it != mp.end(); ++it)///вывод на экран
+        {
+            cout << it->first << " : " << it->second << endl;
+        }
+        for(int i=0;i<m;i++){
+            cout << mass_stolbov[i] << endl;
+        }*/
+
+        polet(argv[1],m, mass_stolbov);
     }
     //
     return 0;
