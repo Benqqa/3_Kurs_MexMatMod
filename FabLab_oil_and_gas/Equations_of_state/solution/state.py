@@ -5,7 +5,7 @@ Created on Sun Oct 31 23:18:48 2021
 @author: maxbo
 """
 import math
-import symPy
+import sympy as sp
 
 class Solution():
     def __init__(self,components_table,mix,p,T):
@@ -14,11 +14,46 @@ class Solution():
         self.p=p #давление
         self.T=T #температура
     def F_V(self):
-        V=symPy.symbols('V')
+        V=sp.symbols('V')
         _sum=0
         for component in self.components_table:
-            _sum=
-           # _sum=_sum+((component.z*(component.K(self.T,self.p)-1))/(V*(component.K(self.T,self.p)-1)+1))
+           # _sum=
+            _sum=_sum+((component.z*(component.K(self.T,self.p)-1))/(V*(component.K(self.T,self.p)-1)+1))
+        res=list(sp.solveset(sp.Eq((_sum),0),V,sp.Reals))
+        print(res[0])
+        return res
+    def F_v(self,V):
+        for value in V:
+            print("value== ",value)
+            if(value<0):
+                print("V ненасыщенном жидком состоянии")
+            elif(value==0):
+                print("V насыщенное жидкое состояние (точка кипения).")
+            elif(value>0 and value<1):
+                print("V двухфазное парожидкостное состояние.")
+            elif(value==1):
+                print("V однофазное насыщенное паровое (газовое) состояние (точка росы).")
+            elif(value>1):
+                print("V однофазное ненасыщенное газовое состояние.")
+        _sum1=0
+        for component in self.components_table:
+            _sum1=_sum1+component.z*component.K(self.T,self.p)
+        _sum2=0
+        for component in self.components_table:
+            _sum2=_sum2+component.z/component.K(self.T,self.p)
+        print(_sum1)
+        print(_sum2)
+        if(_sum1<1):
+            return "ненасыщенном жидком состоянии"
+        elif(_sum1==1):
+            return "насыщенное жидкое состояние (точка кипения)." 
+        elif(_sum2>1 and _sum1>1 ):
+            return "двухфазное парожидкостное состояние." 
+        elif(_sum2==1):
+            return "однофазное насыщенное паровое (газовое) состояние (точка росы)." 
+        elif(_sum2<1):
+            return "однофазное ненасыщенное газовое состояние."
+    
         
 
 class Component():
@@ -68,9 +103,20 @@ class Component():
     def K(self,T,p):
         return self.p_Si(T)/p
    #
+   #уравнением фазовой концентрации компонентов смеси.
+    def y(self,T,p,V):
+        res=[]
+        for value in V:
+            res.append((self.z*self.K(T, p))/(value*(self.K(T, p)-1)+1))
+        return res
+   #
     
 class Mix():
      def __init__(self,mix_table):
          self.mix_table=mix_table
 
-        
+Test=Solution([Component(0.0001,1,0.0001,0.0001,0.05),Component(1,0.0001,1,2,0.03),Component(1,0.0001,1,2,0.03),Component(1,0.0001,1,2,0.43),Component(1,1,0.0001,1,0.15)],1,5,10)
+TEst_C=Component(0.0001,1,0.0001,0.0001,0.05)
+print("rfif",TEst_C.y(1,1,Test.F_V()))
+#Test.F_V()
+print(Test.F_v(Test.F_V()))
