@@ -8,11 +8,10 @@ import math
 import sympy as sp
 import pandas as pd
 class Solution():
-    def __init__(self,components_table,mix,p,T):
+    def __init__(self,components_table,p,T):
         self.components_table=components_table
         self.R=8.314
         self.eps=10**(-5)
-        self.mix=mix
         self.p=p #давление
         self.T=T #температура
         for component in self.components_table:
@@ -31,7 +30,13 @@ class Solution():
         V=sp.symbols('V')
         _sum=0
         for component in self.components_table:
-            _sum=_sum+((component.z*(component.K-1))/(V*(component.K-1)+1))
+            el=((component.z*(component.K-1))/(V*(component.K-1)+1))
+            _sum+=el
+            print(component.z)
+            print(component.K)
+            print(el)
+            print("----")
+        print(_sum)
         res=list(sp.solveset(sp.Eq((_sum),0),V,sp.Reals))
         print("f_v",res)
         return res
@@ -180,6 +185,7 @@ class Solution():
             _sum=z**3+(C+D-B-1)*(z**2)+(A-B*C+C*D-B*D-D-C)*z-(B*C*D+C*D+A*B)
             Equ=sp.Eq((_sum),0)
             res=list(sp.solveset(Equ,z,sp.Reals))
+            print("aaaa",Equ)
             mass.append(max(res))
         print("max",max(mass))
         return max(mass)
@@ -228,13 +234,12 @@ class Solution():
                 print(f_V)
                 if(f_V != 0):
                     if(math.fabs((f_L/f_V)-1)>self.eps):
-                        print(self.F_v())
                         flag =False
                         break
                     
                     component.K=component.K*f_L/f_V
 class Component():
-    def __init__(self,name,T_c,p_c,w,R,z):
+    def __init__(self,name,T_c,p_c,w,z):
         self.T_c=T_c #критические температуру 
         self.p_c=p_c #давление
         self.w=w #ацентрический фактор 
@@ -299,23 +304,34 @@ class Mix():
      def __init__(self,mixes,consts):
          self.mixes=mixes
          self.consts=consts
+         self.table_consts=self.ReadConsts()
+     def ReadConsts(self):
+         table=pd.read_excel('./'+self.consts,index_col="c")
+         headers=table.columns.values.tolist()
+         return table
+     def getTableValue(self,const,name):
+         headers=self.table_consts.columns.values.tolist()
+         res =self.table_consts[const][name]
+         return res
      def CreateMix(self,mix_number):
         table_mix = pd.read_excel('./'+self.mixes)
         headers_mix=table_mix.columns.values.tolist()
         values_mix=table_mix.iloc[mix_number]
         mass=[]
+        
         #табличка с означениями температуры и давления + вырезать из класса части R
         for i in range(len(values_mix)):
-            mass.append(Component(headers_mix[i],T,p,w,R,values_mix[i]))
-        return table
+            name=headers_mix[i]
+            mass.append(Component(name,self.getTableValue('T_c',name),self.getTableValue('P_c',name),self.getTableValue('w',name),values_mix[i]))
+        return mass
     
-mass=[Component("CH4",0.0001,1,0.0001,0.0001,0.05),Component("CH4",1,0.0001,1,2,0.03),Component("CH4",1,0.0001,1,2,0.03),Component("CH4",1,0.0001,1,2,0.43),Component("CH4",1,1,0.0001,1,0.15)]
+# mass=[Component("CH4",0.0001,1,0.0001,0.0001,0.05),Component("CH4",1,0.0001,1,2,0.03),Component("CH4",1,0.0001,1,2,0.03),Component("CH4",1,0.0001,1,2,0.43),Component("CH4",1,1,0.0001,1,0.15)]
 # Test=Solution(mass,1,5,5)
 # TEst_C=Component("CH4",0.0001,1,0.0001,0.0001,0.05)
 # Test.K_2()
-Mix1=Mix("mix.xlsx")
-a=Mix1.CreateMix(1)
-
+Mix1=Mix("mix.xlsx","consts.xlsx")
+new_mix=Mix1.CreateMix(5)
+Test=Solution(new_mix,0.05,5)
 # print("rfif",TEst_C.y(1,1,Test.V[1]))
 #Test.F_V()
 # print(Test.ln_f(TEst_C,Test.a_m(),Test.b_m(),Test.c_m(),Test.d_m(),Test.z_y))
