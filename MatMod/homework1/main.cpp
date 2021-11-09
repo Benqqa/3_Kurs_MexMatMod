@@ -20,6 +20,9 @@ string * StringToMass(string base_str, char delim, int size){
            // cout << temp << endl;
             mass_str[i] = temp;
             i++;
+            if(i==size){
+                break;
+            }
             //cout << i << endl;
         }
         pos += temp.size() + delim_size;
@@ -109,8 +112,8 @@ int main() {
         }
     }
     in.close();     // закрываем файл
-    std::cout << "Leftmost: "+to_string(fx_l)+" "+to_string(fy_l) << std::endl;
-    std::cout << "Rightmost: "+to_string(fx_r)+" "+to_string(fy_r) << std::endl;
+    std::cout << "Leftmost: " << fx_l << " " << fy_l << "\n";
+    std::cout << "Rightmost: " << fx_r << " " << fy_r << "\n";
 
     return 0;
 }
