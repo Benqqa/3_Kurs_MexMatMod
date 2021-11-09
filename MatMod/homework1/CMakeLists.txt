@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.20)
 
 
-add_executable(dz1 main.cpp)
+add_executable(homework1 main.cpp)
