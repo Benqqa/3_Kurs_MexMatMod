@@ -3,5 +3,5 @@ project(MatMod)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_subdirectory(dz1)
-add_subdirectory(hw2)
+add_subdirectory(homework1)
+add_subdirectory(homework2)
