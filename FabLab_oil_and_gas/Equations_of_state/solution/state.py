@@ -2,7 +2,10 @@
 """
 Created on Sun Oct 31 23:18:48 2021
 
-@author: maxbo
+@author: Benqqa
+
+1) пееписать все под единственый корень в пределах 0,000001 до 1,00000001
+2) пределы изменение p от 3 до 7 
 """
 import math
 import sympy as sp
@@ -11,7 +14,7 @@ class Solution():
     def __init__(self,components_table,p,T):
         self.components_table=components_table
         self.R=8.314
-        self.eps=10**(5)
+        self.eps=10**(-5)
         self.p=p #давление
         self.T=T #температура
         self.TableOfPairCollisionRate=self.getTableOfPairCollisionRate()
@@ -19,9 +22,13 @@ class Solution():
             component.f_K(self.T, self.p)
         self.V=self.F_V()
         print(self.F_v())
-        self.z_y=self.SupercompressibilityCoefficient(self.a_m(),self.b_m(),self.c_m(),self.d_m(),'max')
-        self.z_x=self.SupercompressibilityCoefficient(self.x_a_m(),self.x_b_m(),self.x_c_m(),self.x_d_m(),'min')
-        
+        self.z_y=self.SupercompressibilityCoefficient(self.a_m(self.val),self.b_m(self.val),self.c_m(self.val),self.d_m(self.val),'max')
+        self.z_x=self.SupercompressibilityCoefficient(self.x_a_m(self.val),self.x_b_m(self.val),self.x_c_m(self.val),self.x_d_m(self.val),'min')
+        print("z_y",self.z_y)
+        print("z_x",self.z_x)
+        if(len(self.val) !=0):
+            print("rooot",self.val)
+            self.K_2(self.val)
     def getTableOfPairCollisionRate(self):#коэф парного столкновения
         table = pd.read_excel('./коэф парного взаимодействия.xlsx',index_col='c(ij)')
         return table
@@ -34,13 +41,17 @@ class Solution():
             el=((component.z*(component.K))/(V*(component.K)-V*(1)+1))-((component.z*(1))/(V*(component.K)-V*(1)+1))
             _sum+=el
         res=list(sp.solveset(sp.Eq((_sum),0),V,sp.Reals))
-        print("f_v",res)
+        root=[]
+        for item in res:
+            if(item<1.0001 and item>-0.0001):
+                root.append(item)
+        print("f_v",root)
         
-        return res
+        return root
     
     def F_v(self):
         flag=False
-        val=0
+        val=[]
         for value in self.V:
             print("value== ",value)
             if(value<0):
@@ -50,7 +61,7 @@ class Solution():
             elif(value>0 and value<1):
                 print("V двухфазное парожидкостное состояние.")
                 flag=True
-                val=value
+                val.append(value)
             elif(value==1):
                 print("V однофазное насыщенное паровое (газовое) состояние (точка росы).")
             elif(value>1):
@@ -61,14 +72,15 @@ class Solution():
         _sum2=0
         for component in self.components_table:
             _sum2+=+component.z/component.K
-        print(_sum1)
-        print(_sum2)
+        # print(_sum1)
+        # print(_sum2)
         if(_sum1<1):
             return "В ненасыщенном жидком состоянии"
         elif(_sum1==1):
             return "В насыщенном жидком состоянии (точка кипения)." 
         elif(_sum2>1 and _sum1>1 ):
-            # if(flag):
+            if(flag):
+                self.val=val
                 # self.K_2(val)
             return "В двухфазном состоянии." 
         elif(_sum2==1):
@@ -80,34 +92,34 @@ class Solution():
         i=table.columns.values.tolist().index(row_name)
         return table[column_name].iloc[i]
     #какие то коэфициенты
-    def a_m(self):
+    def a_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                 for component_j in self.components_table:
                     _sum+=component_i.y(self.T, self.p, value)*component_j.y(self.T, self.p, value)*(1-self.C(component_i.name,component_j.name))*math.sqrt(component_i.a(self.T)*component_j.a(self.T))
             res.append(_sum)
         return res
-    def b_m(self):
+    def b_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.y(self.T, self.p, value)*component_i.b()
             res.append(_sum)
         return res
-    def c_m(self):
+    def c_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.y(self.T, self.p, value)*component_i.c()
             res.append(_sum)
         return res
-    def d_m(self):
+    def d_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.y(self.T, self.p, value)*component_i.d()
@@ -115,34 +127,34 @@ class Solution():
         return res
     #
     #какие то коэфициенты2
-    def x_a_m(self):
+    def x_a_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                 for component_j in self.components_table:
                     _sum+=component_i.x(self.T, self.p, value)*component_j.y(self.T, self.p, value)*(1-self.C(component_i.name,component_j.name))*math.sqrt(component_i.a(self.T)*component_j.a(self.T))
             res.append(_sum)
         return res
-    def x_b_m(self):
+    def x_b_m(self, val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.x(self.T, self.p, value)*component_i.b()
             res.append(_sum)
         return res
-    def x_c_m(self):
+    def x_c_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.x(self.T, self.p, value)*component_i.c()
             res.append(_sum)
         return res
-    def x_d_m(self):
+    def x_d_m(self,val):
         res=[]
-        for value in self.V:    
+        for value in val:    
             _sum=0
             for component_i in self.components_table:
                     _sum+=component_i.y(self.T, self.p, value)*component_i.d()
@@ -220,6 +232,7 @@ class Solution():
         c1=c_m
         d1=d_m
         res=[]
+        
         for i in range(len(A1)):  
             value=self.V[i]
             
@@ -248,36 +261,47 @@ class Solution():
         return res
    #
    #Корректируют значения коэффициентов распределения
-    def K_2(self):
+    def K_2(self, val):
         flag=True
         while(flag):
+            flag= False
             for component in self.components_table:
                 print(component.name)
-                res1=self.ln_f(component, self.a_m(), self.b_m(), self.c_m(), self.d_m(), self.z_y,'max')
-                res2=self.ln_f(component, self.x_a_m(), self.x_b_m(), self.x_c_m(), self.x_d_m(), self.z_x,'min')
+                res1=self.ln_f(component, self.a_m(val), self.b_m(val), self.c_m(val), self.d_m(val), self.z_y,'max')
+                res2=self.ln_f(component, self.x_a_m(val), self.x_b_m(val), self.x_c_m(val), self.x_d_m(val), self.z_x,'min')
                 if(len(res1)==0 or len(res2) == 0):
                     print("Empty")
                     continue
                 ln_f_L=max(res1)
                 ln_f_V=max(res2)
-                print(ln_f_L)
+                print('ln_f_L',ln_f_L)
                 print('ln_f_V',ln_f_V)
                 f_L=math.exp(ln_f_L)
                 f_V=math.exp(ln_f_V)
                 print(f_L)
                 print(f_V)
                 if(f_V != 0):
-                    print("WWWWWWWWWWWW",math.fabs((f_L/f_V)-1))
-                    if(math.fabs((f_L/f_V)-1)>self.eps):
-                        flag =False
+                    print("solution",math.fabs((f_L/f_V)-1),math.fabs((f_L/f_V)))
+                    if(math.fabs((f_L/f_V)-1)<self.eps):
+                        flag =True
                         self.V=self.F_V()
                         print(self.F_v())
-                        self.z_y=self.SupercompressibilityCoefficient(self.a_m(),self.b_m(),self.c_m(),self.d_m(),'max')
-                        self.z_x=self.SupercompressibilityCoefficient(self.x_a_m(),self.x_b_m(),self.x_c_m(),self.x_d_m(),'min')
-                        print("some eeeeeee")
-                        break
-                    
-                    component.K=component.K*f_L/f_V
+                        self.z_y=self.SupercompressibilityCoefficient(self.a_m(val),self.b_m(val),self.c_m(val),self.d_m(val),'max')
+                        self.z_x=self.SupercompressibilityCoefficient(self.x_a_m(val),self.x_b_m(val),self.x_c_m(val),self.x_d_m(val),'min')
+                        print("z_y",self.z_y)
+                        print("z_x",self.z_x)
+                        print("Бегом пересчитывать!!!!!!")
+            if(flag):    
+                component.K=component.K*f_L/f_V
+        summ_x=0
+        summ_y=0
+        for component in self.components_table:
+            print(component.name, " x = ", component.x_value)
+            print(component.name, " y = ", component.y_value)
+            summ_x+=component.x_value
+            summ_y+=component.y_value
+        print("summ_x",summ_x )
+        print("summ_y",summ_y )
 class Component():
     def __init__(self,name,T_c,p_c,w,z,Z_c,Omega_c,Psy):
         self.T_c=T_c #критические температуру 
@@ -290,6 +314,8 @@ class Component():
         self.Z_c=self.calc_Z_c(Z_c)
         self.Omega_c=self.calc_Omega_c(Omega_c)
         self.Psy=self.calc_Psy(Psy)
+        self.x_value =1
+        self.y_value =1
     #self.T=T # а это откуда?
     def calc_Z_c(self,Z_c):
         if(Z_c==1):
@@ -355,13 +381,17 @@ class Component():
    #уравнением фазовой концентрации компонентов смеси.
     def y(self,T,p,V):
         # print("y",(self.z*self.K)/(V*(self.K-1)+1))
-        return (self.z*self.K)/(V*(self.K-1)+1)
+        res =(self.z*self.K)/(V*(self.K-1)+1)
+        self.x_value = res
+        return res
    
    #
    #мольные доли компонентов смеси в жидкой фазе. 
     def x(self,T,p,V):
         # print("x",self.z/(V*(self.K-1)+1))
-        return self.z/(V*(self.K-1)+1)
+        res=self.z/(V*(self.K-1)+1)
+        self.y_value = res
+        return res
         
    #
     
@@ -397,7 +427,7 @@ class Mix():
 Mix1=Mix("mix.xlsx","consts.xlsx","params.xlsx")
 new_mix=Mix1.CreateMix(1)
 Test=Solution(new_mix,5,273.15+5)
-Test.K_2()
+#Test.K_2()
 # print("rfif",TEst_C.y(1,1,Test.V[1]))
 #Test.F_V()
 # print(Test.ln_f(TEst_C,Test.a_m(),Test.b_m(),Test.c_m(),Test.d_m(),Test.z_y))
