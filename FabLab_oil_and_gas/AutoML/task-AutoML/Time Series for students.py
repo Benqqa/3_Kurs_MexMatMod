@@ -17,8 +17,8 @@ from openpyxl import load_workbook
 from plotly.subplots import make_subplots
 from sklearn.metrics import mean_absolute_percentage_error
 
-path_results_liq = "C://Users/Daniil/PycharmProjects/AutoM/result_timeseries_liq_for_students"
-path_results_oil = "C://Users/Daniil/PycharmProjects/AutoM/result_timeseries_oil"
+path_results_liq = "H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/result_timeseries_liq_for_students"
+path_results_oil = "H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/result_timeseries_oil"
 warnings.filterwarnings("ignore")
 
 # функции преобразования времени и дат
@@ -80,7 +80,7 @@ def validation_period(path, ndays=90):
     return df[df.dt > df.dt.values[-1] - datetime.timedelta(days=ndays)].reset_index(drop=True)
 
 # csvfile = glob.glob(os.path.join("./packed_data_for_students", '*.csv'))
-csvfile = 'C:/Users/Daniil/PycharmProjects/AutoM/packed_data2/chess_2560660100.csv'
+csvfile = 'H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/task-AutoML/packed_data_for_students/chess_2.csv'
 
 
 #расчёт дебита жидкости

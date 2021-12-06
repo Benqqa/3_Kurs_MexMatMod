@@ -23,10 +23,10 @@ task = Task(TaskTypesEnum.regression)
 # path = 'C:/Users/Daniil/Downloads/chess_2560610300.csv'
 # path = 'C:/Users/Daniil/Downloads/chess_2560616000.csv'
 # path = 'C:/Users/Daniil/Downloads/chess_2560617200.csv'
-path = 'C:/Users/Daniil/PycharmProjects/AutoM/packed_data2/chess_2560660100.csv'
+path = 'H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/task-AutoML/packed_data_for_students/chess_2.csv'
 
-path_results_liq = 'C://Users/Daniil/PycharmProjects/AutoM/result_regression_liq'
-path_results_oil = 'C://Users/Daniil/PycharmProjects/AutoM/result_regression_oil'
+path_results_liq = 'H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/result_regression_liq'
+path_results_oil = 'H://Ucheba/Poly_3_kurs/3_Kurs_MexMatMod/FabLab_oil_and_gas/AutoML/result_regression_oil'
 
 def convert_day_date(x: str) -> datetime.date:
     return datetime.datetime.strptime(x, '%Y-%m-%d').date()
@@ -54,7 +54,7 @@ def validation_period(path, ndays=90):
     return df[df.dt > df.dt.values[-1] - datetime.timedelta(days=ndays)].reset_index(drop=True)
 
 
-csvfiles = glob.glob(os.path.join("./packed_data2", '*.csv'))
+csvfiles = glob.glob(os.path.join("./packed_data_for_students", '*.csv'))
 
 
 
